@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="day3.mapper.MemberTblMapper">
+  <!-- mybatis-spring에서는 namespace 속성이 필수 입니다. : mapper 패키지이름.인터페이스명으로 설정합니다. 
+  	-->
+  	<insert id="insert" parameterType="Member">
+  	INSERT INTO MEMBER_TBL_02 (CUSTNO, CUSTNAME, PHONE, ADDRESS,JOINDATE, GRADE, CITY) 
+	VALUES(#{custNo},#{custName},#{phone},#{address},sysdate,#{grade},#{city})
+	<!-- 파라미터타입이 클래스일때 #{}는 프로퍼티이름을 정확히 대소문자 구분하여 작성 -->
+  	</insert>
+  	
+  	<update id="update" parameterType="Member">
+  	UPDATE MEMBER_TBL_02 
+  	SET phone=#{phone}, address=#{address}, city=#{city} 
+	WHERE custno = #{custNo}
+  	</update>
+  	
+  	<select id="search" parameterType="java.util.Map" resultType="Member">
+  	select * from member_tbl_02
+  	<if test="column=='name'">
+  		where custname like '%'||#{find}||'%'
+  	</if>
+  	<if test="column=='address'">
+  		where address like '%'||#{find}||'%'
+  	</if>
+  	<if test="column=='city'">
+  		where city = #{find}
+  	</if>
+  	<if test="column=='grade'">
+  		where grade = #{find}
+  	</if>
+  	</select>
+  	
+  	<!-- select 실행결과 자동으로 Member 객체를 생성해서 매핑을 합니다. -->
+  	<select id="selectOne" parameterType="int" resultType="Member">
+  	select * from member_tbl_02 where custno = #{custNo}
+  	</select>
+  	<!-- select 실행결과가 여러행이 되는 List인 경우에는 <T>에 해당하는 제너릭 타입을 설정합니다. -->
+  	<select id="selectAll" resultType="Member">
+  	select * from member_tbl_02
+  	</select>
+  	
+  	<select id="searchName" parameterType="String" resultType="Member">
+  	select * from member_tbl_02 where custname like '%'||#{find}||'%'
+  	</select>
+  	
+  	<select id="getNextSeq" resultType="int">
+  	select member_seq02.nextval from dual
+  	</select>
+  	
+  </mapper>
