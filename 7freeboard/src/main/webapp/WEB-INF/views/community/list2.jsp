@@ -9,7 +9,7 @@
 <title>우리동네 커뮤니티</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/freeboard.css">
 </head>
-<body>
+<body>	<!-- list.jsp에서 pageNo 파라미터를 get으로 전달하는 것 post로 변경해봅시다. -->
 <h3>우리동네 커뮤니티</h3>
 <hr>
 <div style="margin:auto;">
@@ -47,18 +47,29 @@
  <!-- 페이지 이동 :전체보기 -->
  
  <div style="text-align: center;">
- <!-- 가장 첫페이지로 이동 -->
-	<a class="pagenum" href="?pageNo=1">&lt;&lt;</a>   <!-- 요청url은 동일하고 파라미터만 변경됩니다. -->
-	<a class="${page.startPage>1? 'pagenum':'none'}" href="?pageNo=${page.startPage-1 }">&lt;</a>  
+ <!-- 가장 첫페이지로 이동 --> <!-- href대신에 onclick으로 변경해서 자바스크립트에서 처리합니다. -->
+ 							<!-- url 주소에 파라미터값을 숨기기위해(pageNo=1) -->
+	<a class="pagenum"  onclick="javascript:goPage(1)">&lt;&lt;</a>   <!-- 요청url은 동일하고 파라미터만 변경됩니다. -->
+	<a class="${page.startPage>1? 'pagenum':'none'}" onclick="javascript:goPage('${page.startPage-1 }')">&lt;</a>  
 	
 	<c:forEach var="i" begin="${page.startPage }" end="${page.endPage}">  <!-- 페이지목록의 범위  -->
-		<a class="pagenum" href="?pageNo=${i}">${i}</a>     <!-- 현재페이지 i값으로 변경  -->
+		<a class="pagenum" onclick="javascript:goPage('${i}')">${i}</a>     <!-- 현재페이지 i값으로 변경  -->
 	</c:forEach>
 	
-	<a class="${page.endPage!=page.totalPage? 'pagenum':'none'}" href="?pageNo=${page.endPage+1 }">&gt;</a> 
-	<a class="pagenum" href="?pageNo=${page.totalPage }">&gt;&gt;</a> <!-- 맨 마지막 페이지 -->
+	<a class="${page.endPage!=page.totalPage? 'pagenum':'none'}"  onclick="javascript:goPage('${page.endPage+1 }')">&gt;</a> 
+	<a class="pagenum"  onclick="javascript:goPage('${page.totalPage }')" >&gt;&gt;</a> <!-- 맨 마지막 페이지 -->
 </div>
-
+<form action="" method="post">
+	<input name="pageNo" type="hidden">
+</form>
+<script type="text/javascript">
+	function goPage(no){	//바뀔 페이지번호가 no변수에 전달됩니다.
+		const frm = document.forms[0];
+		frm.action = 'list'
+		frm.pageNo.value=no;
+		frm.submit();
+	}
+</script>
 
 </body>
 </html>

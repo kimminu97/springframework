@@ -3,6 +3,19 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mycompany.idev.mapper.FreeboardMapper">
+	<!-- 새글 쓰기 -->
+	<insert id="insert">
+		INSERT INTO FREEBOARD(IDX, NAME, PASSWORD, SUBJECT, CONTENT)
+		VALUES(board_idx_seq.nextval, #{name}, #{password}, #{subject}, #{content})
+	</insert>
+	<!-- 글 수정 -->
+	<update id="update" parameterType="Freeboard">
+		update freeboard set content=#{content}, wdate=sysdate where idx=#{idx}
+	</update>
+	<!-- 글 상세보기 -->
+	<select id="getOne" parameterType="int" resultType="Freeboard">
+		select * from freeboard where idx=#{idx}
+	</select>
 	<select id="getPageList" parameterType="Map" resultType="Freeboard">
 		SELECT * from(
 			SELECT rownum AS R, T.* from
