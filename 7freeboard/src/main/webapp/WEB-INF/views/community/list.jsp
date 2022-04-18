@@ -8,6 +8,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>우리동네 커뮤니티</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/freeboard.css">
+<script type="text/javascript">
+	if(${message!=null}) 
+		alert('${message}');
+</script>
 </head>
 <body>
 <h3>우리동네 커뮤니티</h3>
@@ -23,7 +27,7 @@
  	<c:forEach var="vo" items="${list}">
 	<tr>
 		<td>${vo.idx }</td> 	
- 		<td><a href="detail?idx=${vo.idx}&page=${page.pageNo}" class="title">${vo.subject }</a>
+ 		<td><a href="detail?idx=${vo.idx}&pageNo=${page.pageNo}" class="title">${vo.subject }</a>
  		...<span style="color:orange;font-size: 80%;">(${vo.commentCount})
  		</span></td>
  		<td>${vo.name }</td>

@@ -5,25 +5,42 @@
 <mapper namespace="com.mycompany.idev.mapper.FreeboardMapper">
 	<!-- 새글 쓰기 -->
 	<insert id="insert">
-		INSERT INTO FREEBOARD(IDX, NAME, PASSWORD, SUBJECT, CONTENT)
-		VALUES(board_idx_seq.nextval, #{name}, #{password}, #{subject}, #{content})
+		INSERT INTO FREEBOARD(IDX, NAME, PASSWORD, SUBJECT,
+		CONTENT)
+		VALUES(board_idx_seq.nextval, #{name}, #{password},
+		#{subject}, #{content})
 	</insert>
 	<!-- 글 수정 -->
 	<update id="update" parameterType="Freeboard">
-		update freeboard set content=#{content}, wdate=sysdate where idx=#{idx}
+		update freeboard set
+		content=#{content},SUBJECT =CONCAT('(수정)',subject )
+		, wdate=sysdate
+		where idx=#{idx}
 	</update>
 	<!-- 글 상세보기 -->
 	<select id="getOne" parameterType="int" resultType="Freeboard">
-		select * from freeboard where idx=#{idx}
+		select * from
+		freeboard where idx=#{idx}
 	</select>
-	<select id="getPageList" parameterType="Map" resultType="Freeboard">
+	<!-- 조회수 증가 -->
+	<update id="readCount" parameterType="int">
+		update freeboard set readCount=readCount+1 where idx=#{idx}
+	</update>
+	<select id="getPageList" parameterType="Map"
+		resultType="Freeboard">
 		SELECT * from(
-			SELECT rownum AS R, T.* from
-				(SELECT rownum, idx,name,subject FROM FREEBOARD f ORDER BY idx desc ) T )
-		WHERE R BETWEEN #{startNo} AND #{endNo}
+		SELECT rownum AS R, T.* from
+		(SELECT * FROM FREEBOARD f ORDER BY idx desc ) T )
+		WHERE R BETWEEN #{startNo}
+		AND #{endNo}
 	</select>
-	
+
 	<select id="getCount" resultType="int">
-	select count(*) from freeboard
+		select count(*) from freeboard
 	</select>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM FREEBOARD
+		WHERE IDX=${idx}
+	</delete>
 </mapper>

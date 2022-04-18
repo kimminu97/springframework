@@ -1,64 +1,52 @@
 package com.koreait.idev.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.koreait.idev.model.Gallery;
+import com.koreait.idev.service.GalleryService;
 
 @Controller
 public class GalleryController {
 	private static final Logger logger = LoggerFactory.getLogger(GalleryController.class);
 
-	@GetMapping("gallery")
-	public void view() {
-
+	//@autowired -> 의존성 주입을 순환하는 오류를 쉽게 발생될 수 있다.
+	private final GalleryService service;
+	
+	//생성자로 자동 주입합니다.
+	public GalleryController(GalleryService service) {
+		this.service=service;
 	}
-
-	@PostMapping("gallery")
-	public void upload(Gallery vo, Model model) {
-		// 서버에서 전송받은 파일을 저장할 포더를 정합니다 : c:\\upload
-		String path = "c:\\upload"; // \는 출력 또는 문자열로 지정할때는 두번씁니다.
-
-		// view(jsp)로 전달할 파일명 리스트
-		List<String> list = new ArrayList<String>();
-
-		// 서버에 전송된 내용 확인 테스트
-		logger.info("title: " + vo.getTitle());
-		for (MultipartFile f : vo.getPics()) {
-			logger.info("파일명 : " + f.getOriginalFilename()); // 전송받은 파일명
-			logger.info("파일 크기 : " + f.getSize());
-			logger.info("랜덤문자열 : " + UUID.randomUUID().toString());
-
-			// 서버에 저장할 파일객체를 생성합니다. : 생성자 인자는 파일객체의 경로와 파일명
-//			File sfile = new File(path + "\\" + f.getOriginalFilename());
-			if (f.getSize() != 0) {
-				String temp = f.getOriginalFilename();
-				String ext = temp.substring(temp.indexOf('.'), temp.length()); // 확장자만 추출
-				String newfile = UUID.randomUUID().toString().substring(0, 8) + ext; // 새로운 파일명
-				File sfile = new File(path + "\\" + newfile);
-				// f.getOriginalFilename()는 여러 접속자(사용자)가 중복된 이름을 사용할 수 있음
-				// -> 파일명은 서버에서 임의로 정해준다.
-				try {
-					// MultipartFile f 로 전송받은 파일을 참조하고 있으므로
-					f.transferTo(sfile); // 서버에 저장할 파일객체로 전달(서버 업로드)
-					list.add(newfile);
-				} catch (IllegalStateException | IOException e) {
-					logger.info("파일 전송오류 : " + e.getMessage());
-				}
-			}
-		}
-		model.addAttribute("list", list);
-//		return "gallery"; 	//view 파일이 gallery.jsp
+	
+	@RequestMapping(value="gallery", method=RequestMethod.GET)
+	public void insert(Model model) {
+		List<Gallery> list = service.getList();
+		model.addAttribute("list",list);
 	}
+	
+	@RequestMapping(value="gallery",method=RequestMethod.POST)
+	//		,headers = ("content-type=multipart/*"))
+	public String save(Gallery vo) { 
+		try {
+			service.save(vo);
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} 
+		return "redirect:gallery";
+	}
+	
+	
 }

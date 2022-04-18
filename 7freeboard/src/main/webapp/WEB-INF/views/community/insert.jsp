@@ -13,8 +13,8 @@
 <hr>
 <form name="frm1" method="post" action="insert">
  <input type="hidden" name="ip" value="${pageContext.request.remoteAddr}">  <!-- 클라이언트 ip -->
- <table style="width:60%;">
- 	<tr><td width="20%" class="td1">제목</td>
+ <table style="width:80%;">
+ 	<tr><td width="30%" class="td1">제목</td>
  		<td class="left"><input type="text" name="subject" size="70" class="input1" 
  			required="required"></td>
  	</tr>
